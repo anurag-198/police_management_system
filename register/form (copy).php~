@@ -1,0 +1,96 @@
+<?php
+    require_once('include/lib.php');
+    $table = "fir";
+    $flag = 1;
+    $dbh = initDb();
+    try {
+            $sql = "SELECT * FROM " . $table;           
+            $stmt = $dbh->query($sql);
+        /*** echo number of columns ***/
+            if (!empty($stmt)) {
+                $result = $stmt->fetchAll(PDO::FETCH_ASSOC);
+                $proceed = true;
+            }
+        } catch (PDOException $e) {
+            echo $e->getMessage;
+            }   
+      
+    if (isset($_POST["name"]) && isset($_POST["cid"]) && isset($_POST["date"]) && isset($_POST["description"]))
+    {
+        $name = $_POST["name"];
+        $cid = $_POST["cid"];
+        $date = $_POST["date"];
+        $description = $_POST["description"];
+        $i = 0;
+        while (!empty($result[$i]['complaint_id'])) {
+            if ($result[$i]['complaint_id'] == $cid) {
+                $flag = 0;
+            }
+            $i++;
+        }
+
+        
+    }
+?>
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title>Table Template | PrepBootstrap</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css" />
+    <link rel="stylesheet" type="text/css" href="font-awesome/css/font-awesome.min.css" />
+
+    <script type="text/javascript" src="js/jquery-1.10.2.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+</head>
+<body>
+
+<div class="container">
+
+<div class="page-header">
+    <h1>Police <small> Seva, Shanti and Nyaya!! </small></h1>
+</div>
+<?php 
+      if (!$flag) {
+        echo "<h1><font color = red>Entry not possible as complaint id is already used </font></h1>";
+        echo '<h1><font color = red></br></br><center><a href= "index.html" >RE-EDIT </a></center></br></br></font></h1>';     
+      }
+?>
+
+<!-- Pricing Table - START -->
+
+  <div class="table-responsive">
+    <table class="table">
+        <thead>
+	<tr>
+	 <th>Particulars </th>
+         <th> Data Enetered </th>
+	</tr>
+
+        </thead>
+        <tbody>
+	<?php
+		if ($flag) {
+	            echo '<tr> <th> NAME </th><th>'.$name. '</th> </tr>';
+		    echo '<tr> <th> DATE </th><th>'.$name. '</th> </tr>';
+		    echo '<tr> <th> COMPLAINT ID </th><th>'.$cid. '</th> </tr>';
+		    echo '<tr> <th> DESCRIPTION </th><th>'.$description. '</th> </tr>';
+		     if ($flag) {
+	                        $sql = "insert into fir values (:complaint_id,:date,:description,:name)";           
+	       
+	                        $q = $dbh->prepare($sql);
+	                        $q->execute(array(':complaint_id'=>$cid,':date'=>$date, ':description'=>$description,':name'=>$name));  
+	            }
+		}
+	?>
+           
+        </tbody>
+    </table>
+</div>
+
+</div>
+
+</body>
+</html>

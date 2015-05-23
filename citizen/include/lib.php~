@@ -1,0 +1,54 @@
+<?php
+	date_default_timezone_set ('Asia/Calcutta');
+        function initDb() {
+                $db = new PDO('mysql:host=localhost;dbname=accomodation;charset=utf8', 'root', '');
+                $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+                return $db;
+        }
+        
+        function initReg() {
+                $db = new PDO('mysql:host=localhost;dbname=register;charset=utf8', 'root', '');
+                $db->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+                $db->setAttribute(PDO::ATTR_EMULATE_PREPARES, false);
+                return $db;
+        }
+
+        function sec_session_start()
+        {
+        $session_name = 'sec_session_imp'; // Set a custom session name
+        $secure = false; // Set to true if using https.
+        $httponly = true; // This stops javascript being able to access the session id.
+
+        ini_set('session.use_only_cookies', 1); // Forces sessions to only use cookies.
+        $cookieParams = session_get_cookie_params(); // Gets current cookies params.
+        session_set_cookie_params($cookieParams["lifetime"], $cookieParams["path"], $cookieParams["domain"], $secure);
+        session_name($session_name); // Sets the session name to the one set above.
+        session_start(); // Start the php session
+        session_regenerate_id(); // regenerated the session, delete the old one.
+        }
+
+        function adc_attack()
+        {
+                /*Checking for cross-site attacks*/
+                if (isset($_SERVER['HTTP_REFERER'])) $ref = $_SERVER['HTTP_REFERER'];
+                else $ref = '';
+                $ref = preg_replace("/https:\/\//i", "", $ref);
+                $ref = preg_replace("/^www\./i", "", $ref );
+                $ref = preg_replace("/\/.*/i", "", $ref );
+                $domain = $_SERVER['HTTP_HOST'];
+                $referer = $ref ;
+                if ($referer == $domain) return true;
+                else return false;
+        }
+
+        function san($var)
+        {
+                $var = stripslashes($var);
+                $var = htmlentities($var);
+                $var = strip_tags($var);
+                $var = trim($var);
+                return $var;
+        }
+
+?>
